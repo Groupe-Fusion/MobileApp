@@ -1,5 +1,5 @@
-import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 export const options = { headerShown: false };
 
@@ -14,7 +14,7 @@ export default function Index() {
             </Pressable>
 
             {/* Bouton temporaire pour accès sans compte */}
-            <Pressable onPress={() => router.push('/(tabs)')}>
+            <Pressable style={styles.secondaryButton} onPress={() => router.push('/(tabs)')}>
                 <Text style={styles.secondaryButtonText}>
                     Accéder sans compte
                 </Text>

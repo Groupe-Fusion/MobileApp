@@ -11,7 +11,8 @@ import { useEffect } from 'react';
 import 'react-native-reanimated';
 
 import { useColorScheme } from '@/hooks/useColorScheme';
-import { Text, TouchableOpacity } from 'react-native';
+import { SafeAreaView, Text, TouchableOpacity } from 'react-native';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 // Empêche le splash automatique avant que les assets soient chargés
 SplashScreen.preventAutoHideAsync();
@@ -33,48 +34,64 @@ export default function RootLayout() {
     }
 
     return (
-        <ThemeProvider
-            value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}
-        >
-            <Stack
-                // tu peux préciser l'écran d'entrée si tu veux
-                initialRouteName="index"
-                screenOptions={{ headerTitleAlign: 'center' }}
-            >
-                {/* 1. Welcome (app/index.tsx) */}
-                <Stack.Screen name="index" options={{ headerShown: false }} />
-
-                {/* 2. Auth */}
-                <Stack.Screen
-                    name="inscription"
-                    options={{ headerShown: true, title: 'Créer un compte' }}
-                />
-                {/* Bouton temporaire pour accès sans compte */}
-                <TouchableOpacity
-                    /*style={styles.secondaryButton}*/ onPress={() =>
-                        router.push('/(tabs)')
-                    }
+        <SafeAreaProvider>
+            <SafeAreaView style={{ flex: 1 }}>
+                <ThemeProvider
+                    value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}
                 >
-                    <Text /*style={styles.secondaryButtonText}*/>
-                        Accéder sans compte
-                    </Text>
-                </TouchableOpacity>
-                <Stack.Screen
-                    name="connexion"
-                    options={{ headerShown: true, title: 'Se connecter' }}
-                />
+                    <Stack
+                        // tu peux préciser l'écran d'entrée si tu veux
+                        initialRouteName="index"
+                        screenOptions={{ headerTitleAlign: 'center' }}
+                    >
+                        {/* 1. Welcome (app/index.tsx) */}
+                        <Stack.Screen
+                            name="index"
+                            options={{ headerShown: false }}
+                        />
 
-                {/* 3. Ton flow principal après login */}
-                <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+                        {/* 2. Auth */}
+                        <Stack.Screen
+                            name="inscription"
+                            options={{
+                                headerShown: true,
+                                title: 'Créer un compte',
+                            }}
+                        />
+                        {/* Bouton temporaire pour accès sans compte */}
+                        <TouchableOpacity
+                            /*style={styles.secondaryButton}*/ onPress={() =>
+                                router.push('/(tabs)')
+                            }
+                        >
+                            <Text /*style={styles.secondaryButtonText}*/>
+                                Accéder sans compte
+                            </Text>
+                        </TouchableOpacity>
+                        <Stack.Screen
+                            name="connexion"
+                            options={{
+                                headerShown: true,
+                                title: 'Se connecter',
+                            }}
+                        />
 
-                {/* 4. Page 404 */}
-                <Stack.Screen
-                    name="+not-found"
-                    options={{ title: 'Page introuvable' }}
-                />
-            </Stack>
+                        {/* 3. Ton flow principal après login */}
+                        <Stack.Screen
+                            name="(tabs)"
+                            options={{ headerShown: false }}
+                        />
 
-            <StatusBar style="auto" />
-        </ThemeProvider>
+                        {/* 4. Page 404 */}
+                        <Stack.Screen
+                            name="+not-found"
+                            options={{ title: 'Page introuvable' }}
+                        />
+                    </Stack>
+
+                    <StatusBar style="auto" />
+                </ThemeProvider>
+            </SafeAreaView>
+        </SafeAreaProvider>
     );
 }
