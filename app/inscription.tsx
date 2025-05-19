@@ -84,7 +84,7 @@ export default function InscriptionScreen({ navigation }: Props) {
     const handleSubmit = () => {
         if (!isValid) return;
         console.log('Envoi des données :', form);
-        navigation.navigate('Connexion');
+        router.push('/connexion');
     };
 
     return (
@@ -192,7 +192,9 @@ export default function InscriptionScreen({ navigation }: Props) {
 }
 
 const styles = StyleSheet.create({
-    container: { padding: 20 },
+    container: {
+        padding: 20,
+    },
     title: { fontSize: 22, fontWeight: 'bold', marginBottom: 8 },
     subtitle: { fontSize: 16, marginBottom: 20 },
     input: {
