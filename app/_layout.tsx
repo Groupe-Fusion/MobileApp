@@ -4,14 +4,13 @@ import {
     ThemeProvider,
 } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
-import { router, Stack } from 'expo-router';
+import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
 import 'react-native-reanimated';
 
 import { useColorScheme } from '@/hooks/useColorScheme';
-import { SafeAreaView, Text, TouchableOpacity } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 // Empêche le splash automatique avant que les assets soient chargés
@@ -35,63 +34,52 @@ export default function RootLayout() {
 
     return (
         <SafeAreaProvider>
-            <SafeAreaView style={{ flex: 1 }}>
-                <ThemeProvider
-                    value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}
+            <ThemeProvider
+                value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}
+            >
+                <Stack
+                    // tu peux préciser l'écran d'entrée si tu veux
+                    initialRouteName="index"
+                    screenOptions={{ headerTitleAlign: 'center' }}
                 >
-                    <Stack
-                        // tu peux préciser l'écran d'entrée si tu veux
-                        initialRouteName="index"
-                        screenOptions={{ headerTitleAlign: 'center' }}
-                    >
-                        {/* 1. Welcome (app/index.tsx) */}
-                        <Stack.Screen
-                            name="index"
-                            options={{ headerShown: false }}
-                        />
+                    {/* 1. Welcome (app/index.tsx) */}
+                    <Stack.Screen
+                        name="index"
+                        options={{ headerShown: false }}
+                    />
 
-                        {/* 2. Auth */}
-                        <Stack.Screen
-                            name="inscription"
-                            options={{
-                                headerShown: true,
-                                title: 'Créer un compte',
-                            }}
-                        />
-                        {/* Bouton temporaire pour accès sans compte */}
-                        <TouchableOpacity
-                            /*style={styles.secondaryButton}*/ onPress={() =>
-                                router.push('/(tabs)')
-                            }
-                        >
-                            <Text /*style={styles.secondaryButtonText}*/>
-                                Accéder sans compte
-                            </Text>
-                        </TouchableOpacity>
-                        <Stack.Screen
-                            name="connexion"
-                            options={{
-                                headerShown: true,
-                                title: 'Se connecter',
-                            }}
-                        />
+                    {/* 2. Auth */}
+                    <Stack.Screen
+                        name="inscription"
+                        options={{
+                            headerShown: true,
+                            title: 'Créer un compte',
+                        }}
+                    />
 
-                        {/* 3. Ton flow principal après login */}
-                        <Stack.Screen
-                            name="(tabs)"
-                            options={{ headerShown: false }}
-                        />
+                    <Stack.Screen
+                        name="connexion"
+                        options={{
+                            headerShown: true,
+                            title: 'Se connecter',
+                        }}
+                    />
 
-                        {/* 4. Page 404 */}
-                        <Stack.Screen
-                            name="+not-found"
-                            options={{ title: 'Page introuvable' }}
-                        />
-                    </Stack>
+                    {/* 3. Ton flow principal après login */}
+                    <Stack.Screen
+                        name="(tabs)"
+                        options={{ headerShown: false }}
+                    />
 
-                    <StatusBar style="auto" />
-                </ThemeProvider>
-            </SafeAreaView>
+                    {/* 4. Page 404 */}
+                    <Stack.Screen
+                        name="+not-found"
+                        options={{ title: 'Page introuvable' }}
+                    />
+                </Stack>
+
+                <StatusBar style="auto" />
+            </ThemeProvider>
         </SafeAreaProvider>
     );
 }

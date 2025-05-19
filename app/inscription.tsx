@@ -1,16 +1,17 @@
 // app/inscription.tsx
-import React, { useState, useEffect } from 'react';
+import { RouteProp } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import Checkbox from 'expo-checkbox';
+import { router } from 'expo-router';
+import React, { useEffect, useState } from 'react';
 import {
-    View,
+    Pressable,
+    ScrollView,
+    StyleSheet,
     Text,
     TextInput,
-    StyleSheet,
-    ScrollView,
-    Pressable,
+    View,
 } from 'react-native';
-import Checkbox from 'expo-checkbox';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { RouteProp } from '@react-navigation/native';
 
 export type RootStackParamList = {
     Inscription: undefined;
@@ -181,7 +182,7 @@ export default function InscriptionScreen({ navigation }: Props) {
                 Vous avez déjà un compte ?{' '}
                 <Text
                     style={styles.link}
-                    onPress={() => navigation.navigate('Connexion')}
+                    onPress={() => router.push('/connexion')}
                 >
                     Se connecter
                 </Text>

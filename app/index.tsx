@@ -1,12 +1,22 @@
 import { useRouter } from 'expo-router';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export const options = { headerShown: false };
 
 export default function Index() {
     const router = useRouter();
+    const insets = useSafeAreaInsets();
     return (
-        <View style={styles.container}>
+        <View
+            style={{
+                ...styles.container,
+                marginBottom: insets.bottom,
+                marginLeft: insets.left,
+                marginRight: insets.right,
+                marginTop: insets.top,
+            }}
+        >
             <Text style={styles.logo}>quickserve</Text>
 
             <Pressable onPress={() => router.push('/inscription')}>
@@ -14,10 +24,17 @@ export default function Index() {
             </Pressable>
 
             {/* Bouton temporaire pour accès sans compte */}
-            <Pressable style={styles.secondaryButton} onPress={() => router.push('/(tabs)')}>
+            <Pressable
+                style={styles.secondaryButton}
+                onPress={() => router.push('/(tabs)')}
+            >
                 <Text style={styles.secondaryButtonText}>
                     Accéder sans compte
                 </Text>
+            </Pressable>
+
+            <Pressable onPress={() => router.push('/connexion')}>
+                <Text>Coucou</Text>
             </Pressable>
 
             <Text style={styles.footer}>
