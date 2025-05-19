@@ -1,21 +1,19 @@
-import React from 'react';
-import {
-    SafeAreaView,
-    View,
-    Text,
-    Pressable,
-    StyleSheet,
-    Image,
-} from 'react-native';
-import { useRouter } from 'expo-router';
-import Animated, { FadeIn, SlideInDown } from 'react-native-reanimated';
 import { Ionicons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
+import React from 'react';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
+import Animated, { FadeIn, SlideInDown } from 'react-native-reanimated';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const PRIMARY = '#007AFF';
 const BACKGROUND = '#F0F8FF';
 const CARD = '#FFFFFF';
 
-const categories = [
+const categories: {
+    label: string;
+    path: string;
+    icon: any;
+}[] = [
     {
         label: 'Livraison Express',
         path: 'DeliveryScreen',
@@ -31,15 +29,104 @@ const categories = [
     {
         label: 'Garde d’enfants',
         path: 'BabySittingScreen',
-        icon: 'child-outline',
+        icon: 'person-outline',
     },
 ];
 
 export default function HomeScreen() {
     const router = useRouter();
+    const insets = useSafeAreaInsets();
+
+    const styles = StyleSheet.create({
+        safeArea: {
+            flex: 1,
+            backgroundColor: BACKGROUND,
+        },
+        contentContainer: {
+            padding: 16,
+        },
+        headerImage: {
+            width: '100%',
+            height: 180,
+            borderRadius: 12,
+            marginBottom: 16,
+            alignSelf: 'center',
+        },
+        header: {
+            marginBottom: 24,
+        },
+        welcomeText: {
+            fontSize: 28,
+            fontWeight: '700',
+            color: PRIMARY,
+            marginBottom: 4,
+        },
+        subtitleText: {
+            fontSize: 16,
+            color: '#606370',
+        },
+        profileCard: {
+            backgroundColor: CARD,
+            padding: 20,
+            borderRadius: 16,
+            shadowColor: '#000',
+            shadowOpacity: 0.1,
+            shadowRadius: 10,
+            elevation: 5,
+            marginBottom: 24,
+        },
+        profileTitle: {
+            fontSize: 18,
+            fontWeight: '600',
+            marginBottom: 6,
+            color: PRIMARY,
+        },
+        profileSubtitle: {
+            fontSize: 14,
+            color: '#606370',
+        },
+        categoriesSection: {
+            marginBottom: 16,
+        },
+        categoriesTitle: {
+            fontSize: 20,
+            fontWeight: '700',
+            color: PRIMARY,
+            marginBottom: 12,
+        },
+        categoryCard: {
+            marginBottom: 12,
+            borderRadius: 12,
+            backgroundColor: CARD,
+            shadowColor: '#000',
+            shadowOpacity: 0.05,
+            shadowRadius: 8,
+            elevation: 3,
+        },
+        cardContent: {
+            flexDirection: 'row',
+            alignItems: 'center',
+            padding: 16,
+        },
+        iconWrapper: {
+            width: 32,
+            height: 32,
+            borderRadius: 16,
+            backgroundColor: PRIMARY,
+            justifyContent: 'center',
+            alignItems: 'center',
+            marginRight: 12,
+        },
+        categoryText: {
+            flex: 1,
+            fontSize: 16,
+            fontWeight: '500',
+            color: '#303030',
+        },
+    });
 
     return (
-        <SafeAreaView style={styles.safeArea}>
+        <View style={{ marginTop: insets.top }}>
             <Animated.ScrollView
                 contentContainerStyle={styles.contentContainer}
                 entering={FadeIn.duration(400)}
@@ -107,95 +194,6 @@ export default function HomeScreen() {
                     ))}
                 </View>
             </Animated.ScrollView>
-        </SafeAreaView>
+        </View>
     );
 }
-
-const styles = StyleSheet.create({
-    safeArea: {
-        flex: 1,
-        backgroundColor: BACKGROUND,
-    },
-    contentContainer: {
-        padding: 16,
-        paddingBottom: 32,
-    },
-    headerImage: {
-        width: '100%',
-        height: 180,
-        borderRadius: 12,
-        marginBottom: 16,
-        alignSelf: 'center',
-    },
-    header: {
-        marginBottom: 24,
-    },
-    welcomeText: {
-        fontSize: 28,
-        fontWeight: '700',
-        color: PRIMARY,
-        marginBottom: 4,
-    },
-    subtitleText: {
-        fontSize: 16,
-        color: '#606370',
-    },
-    profileCard: {
-        backgroundColor: CARD,
-        padding: 20,
-        borderRadius: 16,
-        shadowColor: '#000',
-        shadowOpacity: 0.1,
-        shadowRadius: 10,
-        elevation: 5,
-        marginBottom: 24,
-    },
-    profileTitle: {
-        fontSize: 18,
-        fontWeight: '600',
-        marginBottom: 6,
-        color: PRIMARY,
-    },
-    profileSubtitle: {
-        fontSize: 14,
-        color: '#606370',
-    },
-    categoriesSection: {
-        marginBottom: 16,
-    },
-    categoriesTitle: {
-        fontSize: 20,
-        fontWeight: '700',
-        color: PRIMARY,
-        marginBottom: 12,
-    },
-    categoryCard: {
-        marginBottom: 12,
-        borderRadius: 12,
-        backgroundColor: CARD,
-        shadowColor: '#000',
-        shadowOpacity: 0.05,
-        shadowRadius: 8,
-        elevation: 3,
-    },
-    cardContent: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        padding: 16,
-    },
-    iconWrapper: {
-        width: 32,
-        height: 32,
-        borderRadius: 16,
-        backgroundColor: PRIMARY,
-        justifyContent: 'center',
-        alignItems: 'center',
-        marginRight: 12,
-    },
-    categoryText: {
-        flex: 1,
-        fontSize: 16,
-        fontWeight: '500',
-        color: '#303030',
-    },
-});

@@ -9,7 +9,6 @@ import 'react-native-reanimated';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
-// Empêche le splash automatique avant que les assets soient chargés
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
