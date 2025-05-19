@@ -31,7 +31,7 @@ const categories = [
     {
         label: 'Garde d’enfants',
         path: 'BabySittingScreen',
-        icon: 'child-outline',
+        icon: 'person-outline',
     },
 ];
 
