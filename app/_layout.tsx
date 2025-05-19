@@ -13,7 +13,6 @@ import 'react-native-reanimated';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
-// Empêche le splash automatique avant que les assets soient chargés
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
@@ -35,8 +34,7 @@ export default function RootLayout() {
     return (
         <SafeAreaProvider>
             <ThemeProvider
-                value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}
-            >
+                value={colorScheme === 'dark' ? DarkTheme : DefaultTheme} children={undefined}            >
                 <Stack
                     // tu peux préciser l'écran d'entrée si tu veux
                     initialRouteName="index"
