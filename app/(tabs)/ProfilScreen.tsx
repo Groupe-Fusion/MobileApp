@@ -1,6 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import {
     FlatList,
+    Image,
     StyleSheet,
     Text,
     TouchableOpacity,
@@ -46,7 +47,16 @@ export default function ProfilScreen() {
             }}
         >
             <View style={styles.header}>
-                <View style={styles.avatar} />
+                <View style={styles.avatar}>
+                    <Image
+                        style={{
+                            width: 80,
+                            height: 80,
+                            borderRadius: 40,
+                        }}
+                        source={require('../../assets/images/profil.png')}
+                    />
+                </View>
                 <View style={styles.headerText}>
                     <Text style={styles.title}>Alex</Text>
                     <Text style={styles.subText}>
