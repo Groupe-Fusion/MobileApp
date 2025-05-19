@@ -14,7 +14,6 @@ import { useColorScheme } from '@/hooks/useColorScheme';
 import { SafeAreaView, Text, TouchableOpacity } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
-// Empêche le splash automatique avant que les assets soient chargés
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
@@ -40,17 +39,14 @@ export default function RootLayout() {
                     value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}
                 >
                     <Stack
-                        // tu peux préciser l'écran d'entrée si tu veux
                         initialRouteName="index"
                         screenOptions={{ headerTitleAlign: 'center' }}
                     >
-                        {/* 1. Welcome (app/index.tsx) */}
                         <Stack.Screen
                             name="index"
                             options={{ headerShown: false }}
                         />
 
-                        {/* 2. Auth */}
                         <Stack.Screen
                             name="inscription"
                             options={{
@@ -58,13 +54,12 @@ export default function RootLayout() {
                                 title: 'Créer un compte',
                             }}
                         />
-                        {/* Bouton temporaire pour accès sans compte */}
                         <TouchableOpacity
-                            /*style={styles.secondaryButton}*/ onPress={() =>
+                            onPress={() =>
                                 router.push('/(tabs)')
                             }
                         >
-                            <Text /*style={styles.secondaryButtonText}*/>
+                            <Text>
                                 Accéder sans compte
                             </Text>
                         </TouchableOpacity>
@@ -76,13 +71,11 @@ export default function RootLayout() {
                             }}
                         />
 
-                        {/* 3. Ton flow principal après login */}
                         <Stack.Screen
                             name="(tabs)"
                             options={{ headerShown: false }}
                         />
 
-                        {/* 4. Page 404 */}
                         <Stack.Screen
                             name="+not-found"
                             options={{ title: 'Page introuvable' }}

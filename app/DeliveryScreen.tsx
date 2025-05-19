@@ -1,4 +1,3 @@
-// app/DeliveryScreen.tsx
 import React, { useState } from 'react';
 import {
     SafeAreaView,
@@ -6,7 +5,7 @@ import {
     Text,
     StyleSheet,
     TextInput,
-    Pressable, // ← ici
+    Pressable,
     Switch,
     Platform,
 } from 'react-native';

@@ -1,0 +1,108 @@
+import { View, Text, Image, StyleSheet, TouchableOpacity, FlatList } from 'react-native';
+import { IconSymbol } from '@/components/ui/IconSymbol';
+
+interface MenuItem {
+  key: string;
+  icon: string;
+  label: string;
+  onPress?: () => void;
+}
+
+const menuItems: MenuItem[] = [
+  { key: 'history', icon: 'clock', label: 'Historique de mes demandes' },
+  { key: 'profile', icon: 'person', label: 'Mes infos personnelles' },
+  { key: 'locations', icon: 'map.pin', label: 'Lieux enregistrés' },
+  { key: 'payments', icon: 'creditcard', label: 'Mes moyens de paiements' },
+  { key: 'help', icon: 'questionmark.circle', label: 'Aide' },
+  { key: 'privacy', icon: 'lock.shield', label: 'Confidentialité' },
+];
+
+export default function ProfilScreen() {
+  const renderItem = ({ item }: { item: MenuItem }) => (
+    <TouchableOpacity style={styles.item} onPress={item.onPress}>
+      <IconSymbol name={item.icon} size={24} color="#808080" />
+      <Text style={styles.itemText}>{item.label}</Text>
+    </TouchableOpacity>
+  );
+
+  return (
+    <View style={styles.container}>
+      <View style={styles.header}>
+        <View style={styles.avatar} />
+        <View style={styles.headerText}>
+          <Text style={styles.title}>Alex</Text>
+          <Text style={styles.subText}>Membre depuis le 03/12/2024</Text>
+        </View>
+      </View>
+
+      <FlatList
+        data={menuItems}
+        keyExtractor={(item) => item.key}
+        renderItem={renderItem}
+        contentContainerStyle={styles.list}
+      />
+
+      <TouchableOpacity style={styles.logoutButton} onPress={() => { /* handle logout */ }}>
+        <Text style={styles.logoutButtonText}>Me déconnecter</Text>
+      </TouchableOpacity>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 16,
+    justifyContent: 'space-between',
+    backgroundColor: '#FFFFFF',
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 24,
+  },
+  avatar: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    backgroundColor: '#D0D0D0',
+    marginRight: 16,
+  },
+  headerText: {
+    flexDirection: 'column',
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: '600',
+  },
+  subText: {
+    marginTop: 4,
+    color: '#808080',
+    fontSize: 14,
+  },
+  list: {
+    paddingVertical: 8,
+  },
+  item: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 12,
+  },
+  itemText: {
+    marginLeft: 12,
+    fontSize: 16,
+    color: '#000000',
+  },
+  logoutButton: {
+    backgroundColor: '#F0F0F0',
+    alignItems: 'center',
+    paddingVertical: 14,
+    borderRadius: 8,
+    marginTop: 16,
+  },
+  logoutButtonText: {
+    fontSize: 16,
+    fontWeight: '500',
+    color: '#000000',
+  },
+});
