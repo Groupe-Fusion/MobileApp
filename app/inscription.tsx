@@ -1,5 +1,5 @@
 // app/inscription.tsx
-import { RouteProp } from '@react-navigation/native';
+import { RouteProp, useTheme } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import Checkbox from 'expo-checkbox';
 import { router } from 'expo-router';
@@ -12,6 +12,7 @@ import {
     TextInput,
     View,
 } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export type RootStackParamList = {
     Inscription: undefined;
@@ -42,6 +43,9 @@ interface FormState {
 type FormErrors = Partial<Record<keyof FormState, string>>;
 
 export default function InscriptionScreen({ navigation }: Props) {
+    const theme = useTheme();
+    const insets = useSafeAreaInsets();
+
     const [form, setForm] = useState<FormState>({
         nom: '',
         prenom: '',
@@ -87,9 +91,55 @@ export default function InscriptionScreen({ navigation }: Props) {
         router.push('/connexion');
     };
 
+    const styles = StyleSheet.create({
+        container: {
+            padding: 20,
+        },
+        title: {
+            fontSize: 22,
+            fontWeight: 'bold',
+            marginBottom: 8,
+            color: theme.colors.text,
+        },
+        subtitle: { fontSize: 16, marginBottom: 20, color: theme.colors.text },
+        input: {
+            borderWidth: 1,
+            borderColor: '#ccc',
+            borderRadius: 6,
+            padding: 10,
+            marginBottom: 10,
+            color: theme.colors.text,
+        },
+        error: { color: theme.colors.notification, marginBottom: 10 },
+        checkboxContainer: {
+            flexDirection: 'row',
+            alignItems: 'center',
+            marginVertical: 10,
+        },
+        checkboxLabel: { marginLeft: 8, flex: 1 },
+        button: {
+            backgroundColor: theme.colors.primary,
+            padding: 15,
+            borderRadius: 8,
+            alignItems: 'center',
+            marginTop: 20,
+        },
+        buttonDisabled: { backgroundColor: '#aaa' },
+        buttonText: { color: '#fff', fontWeight: 'bold' },
+        footer: {
+            marginTop: 20,
+            textAlign: 'center',
+            color: theme.colors.text,
+        },
+        link: { color: theme.colors.primary, fontWeight: 'bold' },
+    });
+
     return (
         <ScrollView
-            contentContainerStyle={styles.container}
+            contentContainerStyle={{
+                ...styles.container,
+                paddingBottom: insets.bottom,
+            }}
             keyboardShouldPersistTaps="handled"
         >
             <Text style={styles.title}>Bienvenue chez QuickServe</Text>
@@ -190,36 +240,3 @@ export default function InscriptionScreen({ navigation }: Props) {
         </ScrollView>
     );
 }
-
-const styles = StyleSheet.create({
-    container: {
-        padding: 20,
-    },
-    title: { fontSize: 22, fontWeight: 'bold', marginBottom: 8 },
-    subtitle: { fontSize: 16, marginBottom: 20 },
-    input: {
-        borderWidth: 1,
-        borderColor: '#ccc',
-        borderRadius: 6,
-        padding: 10,
-        marginBottom: 5,
-    },
-    error: { color: 'red', marginBottom: 10 },
-    checkboxContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        marginVertical: 10,
-    },
-    checkboxLabel: { marginLeft: 8, flex: 1 },
-    button: {
-        backgroundColor: '#0066cc',
-        padding: 15,
-        borderRadius: 8,
-        alignItems: 'center',
-        marginTop: 20,
-    },
-    buttonDisabled: { backgroundColor: '#aaa' },
-    buttonText: { color: '#fff', fontWeight: 'bold' },
-    footer: { marginTop: 20, textAlign: 'center' },
-    link: { color: '#0066cc', fontWeight: 'bold' },
-});
