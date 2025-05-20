@@ -20,6 +20,7 @@ const TEXT_SECONDARY = '#6B7280';
 const UNREAD_DOT = '#EF4444';
 const SCREEN_WIDTH = Dimensions.get('window').width;
 
+
 const MESSAGES = [
   { id: '1', title: 'Support Client', excerpt: 'Bonjour, comment pouvons-nous vous aider ?', date: '12/05/2025', unread: true },
   { id: '2', title: 'Notification', excerpt: 'Votre paiement a été reçu.', date: '10/05/2025', unread: false },

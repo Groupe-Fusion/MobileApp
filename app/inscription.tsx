@@ -1,10 +1,10 @@
-// app/inscription.tsx
 import { RouteProp, useTheme } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import Checkbox from 'expo-checkbox';
 import { router } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import {
+    ActivityIndicator,
     Pressable,
     ScrollView,
     StyleSheet,
@@ -13,6 +13,7 @@ import {
     View,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export type RootStackParamList = {
     Inscription: undefined;
@@ -42,6 +43,8 @@ interface FormState {
 
 type FormErrors = Partial<Record<keyof FormState, string>>;
 
+const API_URL = 'http://57.128.212.12:8081'; // Remplacez par votre URL d'API
+
 export default function InscriptionScreen({ navigation }: Props) {
     const theme = useTheme();
     const insets = useSafeAreaInsets();
@@ -57,20 +60,18 @@ export default function InscriptionScreen({ navigation }: Props) {
     });
     const [errors, setErrors] = useState<FormErrors>({});
     const [isValid, setIsValid] = useState(false);
+    const [loading, setLoading] = useState(false);
+    const [apiError, setApiError] = useState<string | null>(null);
 
     useEffect(() => {
         const newErrors: FormErrors = {};
         if (!form.nom.trim()) newErrors.nom = 'Le nom est requis';
         if (!form.prenom.trim()) newErrors.prenom = 'Le prénom est requis';
-        if (!/\S+@\S+\.\S+/.test(form.email))
-            newErrors.email = 'Email invalide';
-        if (!/^\+?\d{6,15}$/.test(form.tel))
-            newErrors.tel = 'Téléphone invalide';
-        if (form.password.length < 6)
-            newErrors.password = 'Minimum 6 caractères';
+        if (!/\S+@\S+\.\S+/.test(form.email)) newErrors.email = 'Email invalide';
+        if (!/^\+?\d{6,15}$/.test(form.tel)) newErrors.tel = 'Téléphone invalide';
+        if (form.password.length < 6) newErrors.password = 'Minimum 6 caractères';
         if (form.password !== form.confirmPassword)
-            newErrors.confirmPassword =
-                'Les mots de passe ne correspondent pas';
+            newErrors.confirmPassword = 'Les mots de passe ne correspondent pas';
         if (!form.acceptConditions)
             newErrors.acceptConditions = 'Vous devez accepter les conditions';
 
@@ -80,21 +81,52 @@ export default function InscriptionScreen({ navigation }: Props) {
 
     const handleChange = <K extends keyof FormState>(
         key: K,
-        value: FormState[K],
+        value: FormState[K]
     ) => {
-        setForm((prev) => ({ ...prev, [key]: value }) as FormState);
+        setForm(prev => ({ ...prev, [key]: value }) as FormState);
     };
 
-    const handleSubmit = () => {
+    const handleSubmit = async () => {
         if (!isValid) return;
-        console.log('Envoi des données :', form);
-        router.push('/connexion');
+        setLoading(true);
+        setApiError(null);
+        try {
+            // Création de l'utilisateur
+            const createRes = await fetch(`${API_URL}/api/User`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    email: form.email,
+                    firstName: form.prenom,
+                    lastName: form.nom,
+                    phoneNumber: form.tel,
+                    password: form.password,
+                    confirmPassword: form.confirmPassword,
+                    acceptConditions: form.acceptConditions,
+                }),
+            });
+            if (!createRes.ok) {
+                const err = await createRes.json();
+                throw new Error(err.message || 'Erreur lors de la création du compte');
+            }
+
+            // Sauvegarde des identifiants en local pour connexion automatique
+            await AsyncStorage.multiSet([
+                ['userEmail', form.email],
+                ['userPassword', form.password],
+            ]);
+
+            // Navigation vers l'écran protégé
+            router.push('/index')
+        } catch (e: any) {
+            setApiError(e.message);
+        } finally {
+            setLoading(false);
+        }
     };
 
     const styles = StyleSheet.create({
-        container: {
-            padding: 20,
-        },
+        container: { padding: 20 },
         title: {
             fontSize: 22,
             fontWeight: 'bold',
@@ -111,6 +143,7 @@ export default function InscriptionScreen({ navigation }: Props) {
             color: theme.colors.text,
         },
         error: { color: theme.colors.notification, marginBottom: 10 },
+        apiError: { color: 'red', textAlign: 'center', marginVertical: 10 },
         checkboxContainer: {
             flexDirection: 'row',
             alignItems: 'center',
@@ -123,9 +156,11 @@ export default function InscriptionScreen({ navigation }: Props) {
             borderRadius: 8,
             alignItems: 'center',
             marginTop: 20,
+            flexDirection: 'row',
+            justifyContent: 'center',
         },
         buttonDisabled: { backgroundColor: '#aaa' },
-        buttonText: { color: '#fff', fontWeight: 'bold' },
+        buttonText: { color: '#fff', fontWeight: 'bold', marginLeft: 8 },
         footer: {
             marginTop: 20,
             textAlign: 'center',
@@ -136,10 +171,7 @@ export default function InscriptionScreen({ navigation }: Props) {
 
     return (
         <ScrollView
-            contentContainerStyle={{
-                ...styles.container,
-                paddingBottom: insets.bottom,
-            }}
+            contentContainerStyle={{ ...styles.container, paddingBottom: insets.bottom }}
             keyboardShouldPersistTaps="handled"
         >
             <Text style={styles.title}>Bienvenue chez QuickServe</Text>
@@ -150,7 +182,7 @@ export default function InscriptionScreen({ navigation }: Props) {
             <TextInput
                 placeholder="Nom"
                 style={styles.input}
-                onChangeText={(v) => handleChange('nom', v)}
+                onChangeText={v => handleChange('nom', v)}
                 value={form.nom}
             />
             {!!errors.nom && <Text style={styles.error}>{errors.nom}</Text>}
@@ -158,19 +190,17 @@ export default function InscriptionScreen({ navigation }: Props) {
             <TextInput
                 placeholder="Prénom"
                 style={styles.input}
-                onChangeText={(v) => handleChange('prenom', v)}
+                onChangeText={v => handleChange('prenom', v)}
                 value={form.prenom}
             />
-            {!!errors.prenom && (
-                <Text style={styles.error}>{errors.prenom}</Text>
-            )}
+            {!!errors.prenom && <Text style={styles.error}>{errors.prenom}</Text>}
 
             <TextInput
                 placeholder="Email"
                 style={styles.input}
                 keyboardType="email-address"
                 autoCapitalize="none"
-                onChangeText={(v) => handleChange('email', v)}
+                onChangeText={v => handleChange('email', v)}
                 value={form.email}
             />
             {!!errors.email && <Text style={styles.error}>{errors.email}</Text>}
@@ -179,7 +209,7 @@ export default function InscriptionScreen({ navigation }: Props) {
                 placeholder="Téléphone"
                 style={styles.input}
                 keyboardType="phone-pad"
-                onChangeText={(v) => handleChange('tel', v)}
+                onChangeText={v => handleChange('tel', v)}
                 value={form.tel}
             />
             {!!errors.tel && <Text style={styles.error}>{errors.tel}</Text>}
@@ -188,52 +218,43 @@ export default function InscriptionScreen({ navigation }: Props) {
                 placeholder="Mot de passe"
                 style={styles.input}
                 secureTextEntry
-                onChangeText={(v) => handleChange('password', v)}
+                onChangeText={v => handleChange('password', v)}
                 value={form.password}
             />
-            {!!errors.password && (
-                <Text style={styles.error}>{errors.password}</Text>
-            )}
+            {!!errors.password && <Text style={styles.error}>{errors.password}</Text>}
 
             <TextInput
                 placeholder="Confirmation du mot de passe"
                 style={styles.input}
                 secureTextEntry
-                onChangeText={(v) => handleChange('confirmPassword', v)}
+                onChangeText={v => handleChange('confirmPassword', v)}
                 value={form.confirmPassword}
             />
-            {!!errors.confirmPassword && (
-                <Text style={styles.error}>{errors.confirmPassword}</Text>
-            )}
+            {!!errors.confirmPassword && <Text style={styles.error}>{errors.confirmPassword}</Text>}
 
             <View style={styles.checkboxContainer}>
                 <Checkbox
                     value={form.acceptConditions}
-                    onValueChange={(v) => handleChange('acceptConditions', v)}
+                    onValueChange={v => handleChange('acceptConditions', v)}
                 />
-                <Text style={styles.checkboxLabel}>
-                    J’accepte les conditions d’utilisation et la politique de
-                    confidentialité
-                </Text>
+                <Text style={styles.checkboxLabel}>J’accepte les conditions d’utilisation et la politique de confidentialité</Text>
             </View>
-            {!!errors.acceptConditions && (
-                <Text style={styles.error}>{errors.acceptConditions}</Text>
-            )}
+            {!!errors.acceptConditions && <Text style={styles.error}>{errors.acceptConditions}</Text>}
+
+            {apiError && <Text style={styles.apiError}>{apiError}</Text>}
 
             <Pressable
-                style={[styles.button, !isValid && styles.buttonDisabled]}
+                style={[styles.button, (!isValid || loading) && styles.buttonDisabled]}
                 onPress={handleSubmit}
-                disabled={!isValid}
+                disabled={!isValid || loading}
             >
+                {loading && <ActivityIndicator />}
                 <Text style={styles.buttonText}>S’inscrire</Text>
             </Pressable>
 
             <Text style={styles.footer}>
                 Vous avez déjà un compte ?{' '}
-                <Text
-                    style={styles.link}
-                    onPress={() => router.push('/connexion')}
-                >
+                <Text style={styles.link} onPress={() => router.push('/connexion')}>
                     Se connecter
                 </Text>
             </Text>
