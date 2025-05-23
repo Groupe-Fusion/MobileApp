@@ -1,3 +1,4 @@
+// app/(tabs)/mes-demandes.tsx
 import React, { useEffect, useState, useMemo } from 'react';
 import {
   SafeAreaView,
@@ -19,13 +20,12 @@ const BACKGROUND = '#F2F6FA';
 const CARD_BG = '#FFFFFF';
 const TEXT_PRIMARY = '#1F2937';
 const TEXT_SECONDARY = '#4B5563';
-const SCREEN_WIDTH = Dimensions.get('window').width;
 
 const statusColors: Record<string, string> = {
-  "EnAttente": '#F59E0B',
-  "EnCours": '#34D399',
-  "Terminé": '#6B7280',
-  "Annulé": '#EF4444',
+  EnAttente: '#F59E0B',
+  EnCours:   '#34D399',
+  Terminé:   '#6B7280',
+  Annulé:    '#EF4444',
 };
 
 export default function MesDemandesScreen() {
@@ -39,28 +39,31 @@ export default function MesDemandesScreen() {
   useEffect(() => {
     axios.get('http://57.128.212.12:8082/api/reservations')
       .then(({ data }) => {
-        // l'API renvoie { $id: "...", $values: [ ... ] }
-        setReservations(data.$values || []);
+        // Ici on récupère data.$values, ou un tableau vide si non défini
+        const list = Array.isArray(data.$values) ? data.$values : [];
+        setReservations(list);
       })
       .catch(() => setError('Échec du chargement des demandes'))
       .finally(() => setLoading(false));
   }, []);
 
-  // On sépare en “A venir” / “Passées” selon la date de livraison
-  const now = useMemo(() => new Date(), []);
+  // Filtre "À venir" = EnCours ou EnAttente
   const upcoming = useMemo(
-    () => reservations.filter(r => {
-      const d = new Date(r.deliveryDate);
-      return d > now;
-    }),
-    [reservations, now]
+    () =>
+      reservations.filter(r =>
+        r.reservationStatus === 'EnCours' ||
+        r.reservationStatus === 'EnAttente'
+      ),
+    [reservations]
   );
+  // Filtre "Passées" = tout le reste
   const past = useMemo(
-    () => reservations.filter(r => {
-      const d = new Date(r.deliveryDate);
-      return d <= now;
-    }),
-    [reservations, now]
+    () =>
+      reservations.filter(r =>
+        r.reservationStatus !== 'EnCours' &&
+        r.reservationStatus !== 'EnAttente'
+      ),
+    [reservations]
   );
   const data = tab === 'upcoming' ? upcoming : past;
 
@@ -84,16 +87,26 @@ export default function MesDemandesScreen() {
     const dateFr = item.deliveryDate && item.deliveryDate !== '0001-01-01T00:00:00'
       ? new Date(item.deliveryDate).toLocaleDateString('fr-FR')
       : '—';
-    const address = item.recipientAddress || `${item.startLocation} → ${item.endLocation}` || '—';
+    const address = item.recipientAddress
+      ? item.recipientAddress
+      : item.startLocation && item.endLocation
+        ? `${item.startLocation} → ${item.endLocation}`
+        : '—';
+
     return (
       <Pressable
         style={({ pressed }) => [styles.card, pressed && styles.pressed]}
-        onPress={() => router.push({ pathname: '/RequestDetail', params: { id: item.reservationId } })}
+        onPress={() =>
+          router.push({
+            pathname: '/request-detail/[id]',
+            params: { id: String(item.reservationId) },
+          })
+        }
       >
         <View style={[styles.accentBar, { backgroundColor: tab === 'upcoming' ? PRIMARY : TEXT_SECONDARY }]} />
         <View style={styles.cardBody}>
           <View style={styles.rowTop}>
-            <Text style={styles.title}>{item.name}</Text>
+            <Text style={styles.title}>{item.name || '—'}</Text>
             <Text style={[styles.status, { color: statusColors[item.reservationStatus] || TEXT_SECONDARY }]}>
               {item.reservationStatus || '—'}
             </Text>
@@ -123,10 +136,10 @@ export default function MesDemandesScreen() {
         </View>
 
         <View style={styles.tabBar}>
-          {['upcoming','past'].map(key => (
+          {(['upcoming', 'past'] as const).map(key => (
             <Pressable
               key={key}
-              onPress={() => setTab(key as any)}
+              onPress={() => setTab(key)}
               style={[styles.tabItem, tab === key && styles.tabItemActive]}
             >
               <Text style={[styles.tabText, tab === key && styles.tabTextActive]}>
