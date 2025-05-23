@@ -60,7 +60,6 @@ export default function RequestDetail() {
           longitude: dropoffGeo[0].longitude,
         };
 
-        // 4. Calcule la région initiale
         const latDiff = Math.abs(pickupCoords.latitude - dropoffCoords.latitude);
         const lngDiff = Math.abs(pickupCoords.longitude - dropoffCoords.longitude);
         const DELTA_MIN = 0.02;

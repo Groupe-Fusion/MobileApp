@@ -33,17 +33,14 @@ export default function RootLayout() {
                 value={colorScheme === 'dark' ? DefaultTheme : DefaultTheme}
             >
                 <Stack
-                    // tu peux préciser l'écran d'entrée si tu veux
                     initialRouteName="index"
                     screenOptions={{ headerTitleAlign: 'center' }}
                 >
-                    {/* 1. Welcome (app/index.tsx) */}
                     <Stack.Screen
                         name="index"
                         options={{ headerShown: false }}
                     />
 
-                    {/* 2. Auth */}
                     <Stack.Screen
                         name="inscription"
                         options={{
@@ -60,13 +57,11 @@ export default function RootLayout() {
                         }}
                     />
 
-                    {/* 3. Ton flow principal après login */}
                     <Stack.Screen
                         name="(tabs)"
                         options={{ headerShown: false }}
                     />
 
-                    {/* 4. Page 404 */}
                     <Stack.Screen
                         name="+not-found"
                         options={{ title: 'Page introuvable' }}

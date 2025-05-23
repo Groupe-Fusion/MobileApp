@@ -16,7 +16,7 @@ export const options = {
   headerShown: false,
 };
 
-const API_URL = 'http://57.128.212.12:8081'; // Remplacez par votre URL d'API
+const API_URL = 'http://57.128.212.12:8081';
 
 export default function ConnexionScreen() {
   const router = useRouter();
@@ -59,9 +59,7 @@ export default function ConnexionScreen() {
 
       if (response.ok) {
         const { token, user } = await response.json();
-        // Stockez le token si nécessaire
         await AsyncStorage.setItem('authToken', token);
-        // Naviguez vers l'écran protégé
         router.push('/home');
       } else {
         const errorData = await response.json();

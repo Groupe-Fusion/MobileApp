@@ -169,7 +169,6 @@ function ProvidersList({ providers, loading, error, onSelect, onBack }: { provid
   );
 }
 
-// Wizard principal
 export default function DeliveryProviderWizard() {
   const router = useRouter();
   const [step, setStep] = useState<1 | 2>(1);
@@ -179,7 +178,6 @@ export default function DeliveryProviderWizard() {
   const [error, setError] = useState<string | null>(null);
   const [userCoords, setUserCoords] = useState<{ latitude: number; longitude: number } | null>(null);
 
-  // Récupère la position utilisateur
   useEffect(() => {
     (async () => {
       const { status } = await Location.requestForegroundPermissionsAsync();
